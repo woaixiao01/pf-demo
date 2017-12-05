@@ -1,174 +1,282 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:redis="http://www.springframework.org/schema/redis"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+       http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+       http://www.springframework.org/schema/cache
+       http://www.springframework.org/schema/cache/spring-cache.xsd
+       http://www.springframework.org/schema/redis 
+       http://www.springframework.org/schema/redis/spring-redis.xsd">
 
-    <context:property-placeholder location="beetl/jdbc.properties"/>
+	<context:property-placeholder location="beetl/jdbc.properties" />
 
-    <bean id="propertyPlaceholderConfigurer" class="com.efun.base.config.PropertyConfigurationLoader">
-        <property name="intervalSeconds" value="30"/>
-        <property name="ignoreResourceNotFound" value="true"/>
-        <property name="baseLocation" value="classpath:beetl/*.properties"/>
-    </bean>
+	<bean id="propertyPlaceholderConfigurer" class="com.efun.base.config.PropertyConfigurationLoader">
+		<property name="intervalSeconds" value="30" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="baseLocation" value="classpath:beetl/*.properties" />
+	</bean>
 
-    <!-- 配置管理 -->
-    <bean class="com.efun.base.config.EnvironmentConfigurationLoader"/>
-    <bean class="com.efun.base.config.ConfigurationManager"/>
+	<!-- 配置管理 -->
+	<bean class="com.efun.base.config.EnvironmentConfigurationLoader" />
+	<bean class="com.efun.base.config.ConfigurationManager" />
 
-    <context:component-scan base-package="com.efun.micro"/>
+	<context:component-scan base-package="com.efun.micro" />
 
-    <!--beetl测试-->
-    <!--数据源1配置-->
-    <bean id="dataSource1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <!-- 基本属性 url、user、password -->
-        <property name="driverClassName" value="${jdbc.driver.base}"/>
-        <property name="url" value="${jdbc.url.base}"/>
-        <property name="username" value="${jdbc.username.base}"/>
-        <property name="password" value="${jdbc.password.base}"/>
-    </bean>
+	<!--beetl测试 -->
+	<!--数据源1配置 -->
+	<bean id="dataSource1" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="${jdbc.driver.base}" />
+		<property name="url" value="${jdbc.url.base}" />
+		<property name="username" value="${jdbc.username.base}" />
+		<property name="password" value="${jdbc.password.base}" />
+	</bean>
 
-    <!--数据源2配置-->
-    <bean id="dataSource2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <!-- 基本属性 url、user、password -->
-        <property name="driverClassName" value="${jdbc.driver.base.read}"/>
-        <property name="url" value="${jdbc.url.base.read}"/>
-        <property name="username" value="${jdbc.username.base.read}"/>
-        <property name="password" value="${jdbc.password.base.read}"/>
-    </bean>
+	<!--数据源2配置 -->
+	<bean id="dataSource2" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="${jdbc.driver.base.read}" />
+		<property name="url" value="${jdbc.url.base.read}" />
+		<property name="username" value="${jdbc.username.base.read}" />
+		<property name="password" value="${jdbc.password.base.read}" />
+	</bean>
 
-    <!--数据源3配置-->
-    <bean id="dataSource3" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <!-- 基本属性 url、user、password -->
-        <property name="driverClassName" value="${jdbc.driver.extend}"/>
-        <property name="url" value="${jdbc.url.extend}"/>
-        <property name="username" value="${jdbc.username.extend}"/>
-        <property name="password" value="${jdbc.password.extend}"/>
-    </bean>
+	<!--数据源3配置 -->
+	<bean id="dataSource3" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="${jdbc.driver.extend}" />
+		<property name="url" value="${jdbc.url.extend}" />
+		<property name="username" value="${jdbc.username.extend}" />
+		<property name="password" value="${jdbc.password.extend}" />
+	</bean>
 
-    <!--数据源4配置-->
-    <bean id="dataSource4" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <!-- 基本属性 url、user、password -->
-        <property name="driverClassName" value="${jdbc.driver.extend.read}"/>
-        <property name="url" value="${jdbc.url.extend.read}"/>
-        <property name="username" value="${jdbc.username.extend.read}"/>
-        <property name="password" value="${jdbc.password.extend.read}"/>
-    </bean>
-
-
-    <!--数据源5配置-->
-    <bean id="dataSource5" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <!-- 基本属性 url、user、password -->
-        <property name="driverClassName" value="${jdbc.driver.push}"/>
-        <property name="url" value="${jdbc.url.push}"/>
-        <property name="username" value="${jdbc.username.push}"/>
-        <property name="password" value="${jdbc.password.push}"/>
-    </bean>
+	<!--数据源4配置 -->
+	<bean id="dataSource4" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="${jdbc.driver.extend.read}" />
+		<property name="url" value="${jdbc.url.extend.read}" />
+		<property name="username" value="${jdbc.username.extend.read}" />
+		<property name="password" value="${jdbc.password.extend.read}" />
+	</bean>
 
 
-    <!--基础库主从关系配置-->
-    <bean id="baseDataSource" class="com.efun.beetl.db.BeetlDataSource">
-        <property name="master" ref="dataSource1"/>
-        <property name="slavers">
-            <list>
-                <ref bean="dataSource2"/>
-            </list>
-        </property>
-    </bean>
+	<!--数据源5配置 -->
+	<bean id="dataSource5" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="${jdbc.driver.push}" />
+		<property name="url" value="${jdbc.url.push}" />
+		<property name="username" value="${jdbc.username.push}" />
+		<property name="password" value="${jdbc.password.push}" />
+	</bean>
 
-    <!--拓展库主从关系配置-->
-    <bean id="expandDataSource" class="com.efun.beetl.db.BeetlDataSource">
-        <property name="master" ref="dataSource3"/>
-        <property name="slavers">
-            <list>
-                <ref bean="dataSource4"/>
-            </list>
-        </property>
-    </bean>
 
-    <!--推送库主从关系配置-->
-    <bean id="pushDataSource" class="com.efun.beetl.db.BeetlDataSource">
-        <property name="master" ref="dataSource5"/>
-    </bean>
+	<!--基础库主从关系配置 -->
+	<bean id="baseDataSource" class="com.efun.beetl.db.BeetlDataSource">
+		<property name="master" ref="dataSource1" />
+		<property name="slavers">
+			<list>
+				<ref bean="dataSource2" />
+			</list>
+		</property>
+	</bean>
 
-    <!--所有数据源总的配置-->
-    <bean id="selector" class="com.efun.beetl.db.DataSourceSelector">
-        <!--默认数据库-->
-        <property name="sources">
-            <map>
-                <!--默认数据库DEFAULT必须配置,当服务层没有配置数据源时，默认读取该配置-->
-                <entry key="DEFAULT" value-ref="baseDataSource"/>
-                <entry key="DB_1" value-ref="baseDataSource"/>
-                <entry key="DB_2" value-ref="expandDataSource"/>
-                <entry key="DB_3" value-ref="pushDataSource"/>
-            </map>
-        </property>
-    </bean>
+	<!--拓展库主从关系配置 -->
+	<bean id="expandDataSource" class="com.efun.beetl.db.BeetlDataSource">
+		<property name="master" ref="dataSource3" />
+		<property name="slavers">
+			<list>
+				<ref bean="dataSource4" />
+			</list>
+		</property>
+	</bean>
 
-    <bean name="beetlSqlScannerConfigurer" class="org.beetl.sql.ext.spring4.BeetlSqlScannerConfigurer">
-        <!-- 注入的mapper所在包名 -->
-        <property name="basePackage" value="com.efun.micro"/>
-        <!-- mapper命名后缀规则 例如:UserMapper-后缀Mapper  UserDao-后缀Dao -->
-        <property name="daoSuffix" value="Mapper"/>
-        <property name="sqlManagerFactoryBeanName" value="sqlManagerFactoryBean"/>
-    </bean>
+	<!--推送库主从关系配置 -->
+	<bean id="pushDataSource" class="com.efun.beetl.db.BeetlDataSource">
+		<property name="master" ref="dataSource5" />
+	</bean>
 
-    <bean id="sqlManagerFactoryBean" class="com.efun.beetl.support.SqlManagerFactory">
+	<!--所有数据源总的配置 -->
+	<bean id="selector" class="com.efun.beetl.db.DataSourceSelector">
+		<!--默认数据库 -->
+		<property name="sources">
+			<map>
+				<!--默认数据库DEFAULT必须配置,当服务层没有配置数据源时，默认读取该配置 -->
+				<entry key="DEFAULT" value-ref="baseDataSource" />
+				<entry key="DB_1" value-ref="baseDataSource" />
+				<entry key="DB_2" value-ref="expandDataSource" />
+				<entry key="DB_3" value-ref="pushDataSource" />
+			</map>
+		</property>
+	</bean>
 
-        <!--这个是最重要的，主从选择在该类处理 getConn方法-->
-        <property name="cs">
-            <bean class="com.efun.beetl.db.BeetlConnectionSource">
-                <property name="selector" ref="selector"/>
-                <!--默认业务主从库,无从库则不需配置-->
-                <property name="masterSource" ref="dataSource1"/>
-                <property name="slaves">
-                    <list>
-                        <ref bean="dataSource2"/>
-                    </list>
-                </property>
-            </bean>
-        </property>
+	<bean name="beetlSqlScannerConfigurer" class="org.beetl.sql.ext.spring4.BeetlSqlScannerConfigurer">
+		<!-- 注入的mapper所在包名 -->
+		<property name="basePackage" value="com.efun.micro" />
+		<!-- mapper命名后缀规则 例如:UserMapper-后缀Mapper UserDao-后缀Dao -->
+		<property name="daoSuffix" value="Mapper" />
+		<property name="sqlManagerFactoryBeanName" value="sqlManagerFactoryBean" />
+	</bean>
 
-        <property name="dbStyle">
-            <bean class="org.beetl.sql.core.db.H2Style"/>
-        </property>
-        <property name="sqlLoader">
-            <bean class="org.beetl.sql.core.ClasspathLoader">
-                <property name="sqlRoot" value="/sql"/>
-            </bean>
-        </property>
-        <property name="nc">
-            <bean class="org.beetl.sql.core.JPA2NameConversion"/>
-        </property>
-        <property name="interceptors">
-            <list>
-                <bean class="org.beetl.sql.ext.DebugInterceptor"/>
-            </list>
-        </property>
-    </bean>
+	<bean id="sqlManagerFactoryBean" class="com.efun.beetl.support.SqlManagerFactory">
 
-    <bean id="beetlDataSourceInterceptor" class="com.efun.beetl.db.DataSourceInterceptor"/>
-    <aop:config>
-        <aop:aspect id="dataSourceAspect" ref="beetlDataSourceInterceptor" order="0">
-            <aop:pointcut id="pointCut" expression="execution(* com.efun..*.service..*.*(..))"/>
-            <aop:around pointcut-ref="pointCut" method="invoke"/>
-        </aop:aspect>
-    </aop:config>
+		<!--这个是最重要的，主从选择在该类处理 getConn方法 -->
+		<property name="cs">
+			<bean class="com.efun.beetl.db.BeetlConnectionSource">
+				<property name="selector" ref="selector" />
+				<!--默认业务主从库,无从库则不需配置 -->
+				<property name="masterSource" ref="dataSource1" />
+				<property name="slaves">
+					<list>
+						<ref bean="dataSource2" />
+					</list>
+				</property>
+			</bean>
+		</property>
 
-    <bean id="test1TxManager"   class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource1"></property>
-    </bean>
-    <bean id="test2TxManager"   class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource3"></property>
-    </bean>
+		<property name="dbStyle">
+			<bean class="org.beetl.sql.core.db.H2Style" />
+		</property>
+		<property name="sqlLoader">
+			<bean class="org.beetl.sql.core.ClasspathLoader">
+				<property name="sqlRoot" value="/sql" />
+			</bean>
+		</property>
+		<property name="nc">
+			<bean class="org.beetl.sql.core.JPA2NameConversion" />
+		</property>
+		<property name="interceptors">
+			<list>
+				<bean class="org.beetl.sql.ext.DebugInterceptor" />
+			</list>
+		</property>
+	</bean>
 
-    <!--<tx:annotation-driven transaction-manager="test2TxManager" />-->
-    <!--<tx:annotation-driven transaction-manager="test1TxManager" />-->
+	<bean id="beetlDataSourceInterceptor" class="com.efun.beetl.db.DataSourceInterceptor" />
+	<aop:config>
+		<aop:aspect id="dataSourceAspect" ref="beetlDataSourceInterceptor"
+			order="0">
+			<aop:pointcut id="pointCut"
+				expression="execution(* com.efun..*.service..*.*(..))" />
+			<aop:around pointcut-ref="pointCut" method="invoke" />
+		</aop:aspect>
+	</aop:config>
+
+	<bean id="test1TxManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource1"></property>
+	</bean>
+	<bean id="test2TxManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource3"></property>
+	</bean>
+
+	<!--<tx:annotation-driven transaction-manager="test2TxManager" /> -->
+	<!--<tx:annotation-driven transaction-manager="test1TxManager" /> -->
+
+	<bean id="redisSentinelConfiguration"
+		class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+		<property name="master">
+			<bean class="org.springframework.data.redis.connection.RedisNode">
+				<property name="name" value="mymaster">
+				</property>
+			</bean>
+		</property>
+		<property name="sentinels">
+			<set>
+				<bean class="org.springframework.data.redis.connection.RedisNode">
+					<!-- 测试环境 -->
+					<!-- <constructor-arg name="host" value="192.168.10.39" /> <constructor-arg 
+						name="port" value="26379" /> -->
+					<!-- 本地環境 -->
+					<constructor-arg name="host" value="127.0.0.1" />
+					<constructor-arg name="port" value="26379" />
+				</bean>
+			</set>
+		</property>
+	</bean>
+
+	<!--缓存测试 -->
+	<context:component-scan base-package="com.efun.cache.*" />
+
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="6"></property>
+		<property name="minEvictableIdleTimeMillis" value="300000"></property>
+		<property name="numTestsPerEvictionRun" value="3"></property>
+		<property name="timeBetweenEvictionRunsMillis" value="60000"></property>
+	</bean>
+
+	<bean id="jedisConnectionFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<constructor-arg name="sentinelConfig" ref="redisSentinelConfiguration" />
+		<!-- <constructor-arg name="poolConfig" ref="jedisPoolConfig" /> <property 
+			name="hostName" value="127.0.0.1" /> <property name="port" value="6378" /> -->
+	</bean>
+
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="jedisConnectionFactory" />
+		<property name="defaultSerializer">
+			<bean
+				class="com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer" />
+		</property>
+		<property name="keySerializer">
+			<bean
+				class="com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer" />
+		</property>
+		<property name="valueSerializer">
+			<bean
+				class="com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer" />
+		</property>
+	</bean>
+
+	<cache:annotation-driven />
+
+	<bean id="redisCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+		<constructor-arg name="redisOperations" ref="redisTemplate" />
+		<property name="usePrefix" value="true" />
+		<property name="cachePrefix">
+			<bean class="com.efun.cache.MixCachePrefix">
+				<constructor-arg name="prefix" value="login" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="caffeineCacheManager" class="org.springframework.cache.caffeine.CaffeineCacheManager">
+		<property name="cacheSpecification" value="maximumSize=1000000,expireAfterWrite=300s" />
+	</bean>
+
+	<bean id="cacheManager" primary="true" class="com.efun.cache.MixCacheManager">
+		<property name="caffeineCacheManager" ref="caffeineCacheManager" />
+		<property name="redisCacheManager" ref="redisCacheManager" />
+		<property name="redisOperations" ref="redisTemplate" />
+		<property name="messageTopicName" value="mix_cache_topic" />
+	</bean>
+
+	<bean id="evitCacheMessageListener" class="com.efun.cache.support.EvictCacheMessageListener">
+		<property name="mixCacheManager" ref="cacheManager" />
+	</bean>
+
+	<bean
+		class="org.springframework.data.redis.listener.RedisMessageListenerContainer">
+		<property name="connectionFactory" ref="jedisConnectionFactory" />
+		<property name="messageListeners">
+			<map>
+				<entry key-ref="evitCacheMessageListener">
+					<bean class="org.springframework.data.redis.listener.ChannelTopic">
+						<constructor-arg value="mix_cache_topic" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
 
 </beans>
