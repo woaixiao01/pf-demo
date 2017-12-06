@@ -10,33 +10,36 @@ import com.efun.micro.base.param.SignParam;
  */
 public class LikeParam extends SignParam {
     @NotEmpty
-    private String dataId;// 数据id
+    private String parentId;// 数据id
     @NotEmpty
-    private String dataType;// 数据类型 cartoon, video, news, topic
+    private String module;// 数据类型 cartoon, video, news, topic
     @NotEmpty
-    private String likeType; // 点赞类型：like,dislike,cancelLike
+    private String type; // 点赞类型：like,dislike,cancelLike
 
-    public String getDataId() {
-        return dataId;
-    }
 
-    public void setDataId(String dataId) {
-        this.dataId = dataId;
-    }
+    public String getParentId() {
+		return parentId;
+	}
 
-    public String getDataType() {
-        return dataType;
-    }
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+	
+    public String getModule() {
+		return module;
+	}
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
+	public void setModule(String module) {
+		this.module = module;
+	}
 
-    public String getLikeType() {
-        return likeType;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setLikeType(String likeType) {
-        this.likeType = likeType;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
+
+
 }

@@ -245,7 +245,7 @@
 		<property name="usePrefix" value="true" />
 		<property name="cachePrefix">
 			<bean class="com.efun.cache.MixCachePrefix">
-				<constructor-arg name="prefix" value="login" />
+				<constructor-arg name="prefix" value="pf" />
 			</bean>
 		</property>
 	</bean>
