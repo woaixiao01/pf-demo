@@ -48,76 +48,6 @@
 		<property name="password" value="${jdbc.password.base.read}" />
 	</bean>
 
-	<!--数据源3配置 -->
-	<bean id="dataSource3" class="com.alibaba.druid.pool.DruidDataSource"
-		init-method="init" destroy-method="close">
-		<!-- 基本属性 url、user、password -->
-		<property name="driverClassName" value="${jdbc.driver.extend}" />
-		<property name="url" value="${jdbc.url.extend}" />
-		<property name="username" value="${jdbc.username.extend}" />
-		<property name="password" value="${jdbc.password.extend}" />
-	</bean>
-
-	<!--数据源4配置 -->
-	<bean id="dataSource4" class="com.alibaba.druid.pool.DruidDataSource"
-		init-method="init" destroy-method="close">
-		<!-- 基本属性 url、user、password -->
-		<property name="driverClassName" value="${jdbc.driver.extend.read}" />
-		<property name="url" value="${jdbc.url.extend.read}" />
-		<property name="username" value="${jdbc.username.extend.read}" />
-		<property name="password" value="${jdbc.password.extend.read}" />
-	</bean>
-
-
-	<!--数据源5配置 -->
-	<bean id="dataSource5" class="com.alibaba.druid.pool.DruidDataSource"
-		init-method="init" destroy-method="close">
-		<!-- 基本属性 url、user、password -->
-		<property name="driverClassName" value="${jdbc.driver.push}" />
-		<property name="url" value="${jdbc.url.push}" />
-		<property name="username" value="${jdbc.username.push}" />
-		<property name="password" value="${jdbc.password.push}" />
-	</bean>
-
-
-	<!--基础库主从关系配置 -->
-	<bean id="baseDataSource" class="com.efun.beetl.db.BeetlDataSource">
-		<property name="master" ref="dataSource1" />
-		<property name="slavers">
-			<list>
-				<ref bean="dataSource2" />
-			</list>
-		</property>
-	</bean>
-
-	<!--拓展库主从关系配置 -->
-	<bean id="expandDataSource" class="com.efun.beetl.db.BeetlDataSource">
-		<property name="master" ref="dataSource3" />
-		<property name="slavers">
-			<list>
-				<ref bean="dataSource4" />
-			</list>
-		</property>
-	</bean>
-
-	<!--推送库主从关系配置 -->
-	<bean id="pushDataSource" class="com.efun.beetl.db.BeetlDataSource">
-		<property name="master" ref="dataSource5" />
-	</bean>
-
-	<!--所有数据源总的配置 -->
-	<bean id="selector" class="com.efun.beetl.db.DataSourceSelector">
-		<!--默认数据库 -->
-		<property name="sources">
-			<map>
-				<!--默认数据库DEFAULT必须配置,当服务层没有配置数据源时，默认读取该配置 -->
-				<entry key="DEFAULT" value-ref="baseDataSource" />
-				<entry key="DB_1" value-ref="baseDataSource" />
-				<entry key="DB_2" value-ref="expandDataSource" />
-				<entry key="DB_3" value-ref="pushDataSource" />
-			</map>
-		</property>
-	</bean>
 
 	<bean name="beetlSqlScannerConfigurer" class="org.beetl.sql.ext.spring4.BeetlSqlScannerConfigurer">
 		<!-- 注入的mapper所在包名 -->
@@ -131,9 +61,7 @@
 
 		<!--这个是最重要的，主从选择在该类处理 getConn方法 -->
 		<property name="cs">
-			<bean class="com.efun.beetl.db.BeetlConnectionSource">
-				<property name="selector" ref="selector" />
-				<!--默认业务主从库,无从库则不需配置 -->
+			<bean class="org.beetl.sql.ext.spring4.BeetlSqlDataSource">
 				<property name="masterSource" ref="dataSource1" />
 				<property name="slaves">
 					<list>
@@ -161,27 +89,10 @@
 		</property>
 	</bean>
 
-	<bean id="beetlDataSourceInterceptor" class="com.efun.beetl.db.DataSourceInterceptor" />
-	<aop:config>
-		<aop:aspect id="dataSourceAspect" ref="beetlDataSourceInterceptor"
-			order="0">
-			<aop:pointcut id="pointCut"
-				expression="execution(* com.efun..*.service..*.*(..))" />
-			<aop:around pointcut-ref="pointCut" method="invoke" />
-		</aop:aspect>
-	</aop:config>
-
-	<bean id="test1TxManager"
+	<bean
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource1"></property>
 	</bean>
-	<bean id="test2TxManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource3"></property>
-	</bean>
-
-	<!--<tx:annotation-driven transaction-manager="test2TxManager" /> -->
-	<!--<tx:annotation-driven transaction-manager="test1TxManager" /> -->
 
 	<bean id="redisSentinelConfiguration"
 		class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
