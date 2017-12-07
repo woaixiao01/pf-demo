@@ -2,6 +2,7 @@ package com.efun.micro.base.param;
 /**
  * @author Acel
  * @since 2017/10/23
+ * 待改造
  */
 public class BaseParam {
     private String platform;
