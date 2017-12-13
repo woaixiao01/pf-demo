@@ -11,14 +11,15 @@ import com.efun.micro.mapper.ReadCountMapper;
 @Service
 public class ReadCountService {
 	
-	@Autowired
-	ReadCountMapper readCountMapper;
+//	@Autowired
+//	ReadCountMapper readCountMapper;
 	
 	public long getReadCount(String sourceId, String sourceType){
 		
 		ReadCount readCount = new ReadCount(sourceId, sourceType, null, null, null);
-		long templateCount = readCountMapper.templateCount(readCount);
-		return templateCount;
+//		long templateCount = readCountMapper.templateCount(readCount);
+//		return templateCount;
+		return 0L;
 		
 	}
 
@@ -26,7 +27,7 @@ public class ReadCountService {
 		
 		ReadCount readCount = new ReadCount(sourceId, sourceType, null, null, new Date());
 		long count = getReadCount(sourceId, sourceType)+1;
-		readCountMapper.insert(readCount);
+//		readCountMapper.insert(readCount);
 		return count;
 		
 	}

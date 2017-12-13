@@ -3,6 +3,10 @@ package com.efun.micro.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -13,10 +17,12 @@ import javax.persistence.Table;
  * @since 2016/8/4
  */
 @Table(name = "t_pf_like")
+@Entity
 public class Like implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     //唯一标识
     private String id;
 
@@ -41,8 +47,6 @@ public class Like implements Serializable {
     //删除标识
     private int deleted;
     
-    //删除标识
-    private String platform;
 
     public enum modules{
     	cartoon, video, news, topic
@@ -51,14 +55,6 @@ public class Like implements Serializable {
     public enum likeType{
     	like,dislike,cancelLike
     }
-    
-    public String getPlatform() {
-		return platform;
-	}
-
-	public void setPlatform(String platform) {
-		this.platform = platform;
-	}
 
 	public Like() {
 
@@ -141,7 +137,7 @@ public class Like implements Serializable {
 	@Override
 	public String toString() {
 		return "Like [id=" + id + ", createdTime=" + createdTime + ", lastModifiedTime=" + lastModifiedTime + ", uid="
-				+ uid + ", module=" + module + ", type=" + type + ", parentId=" + parentId + ", deleted=" + deleted
-				+ ", platform=" + platform + "]";
+				+ uid + ", module=" + module + ", type=" + type + ", parentId=" + parentId + ", deleted=" + deleted+
+				 "]";
 	}
 }

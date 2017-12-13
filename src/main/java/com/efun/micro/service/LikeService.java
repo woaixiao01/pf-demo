@@ -25,21 +25,21 @@ public class LikeService {
 	
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     
-    @Autowired
-    LikeMapper likeMapper;
+//    @Autowired
+//    LikeMapper likeMapper;
     
     @Autowired
     RedisTemplate<String, String> redisTemplate;
     
-    @Autowired
-    SQLManager sqlManager;
+//    @Autowired
+//    SQLManager sqlManager;
     /**
      * 增加点赞的Service
      * @param like
      * @return
      */
     public Like addLike(Like like) {        
-    	likeMapper.insert(like);
+//    	likeMapper.insert(like);
         logger.info("Like:{}"+like.toString());        
         
         String cacheKey = getlikeModuleCacheKey(like.getModule(), like.getParentId(), like.getUid());
@@ -79,10 +79,11 @@ public class LikeService {
     @MixCacheable(value = "countLike",key = "#uid + #parentId + #module", expire = ExpireTime.FIVE_MIN)
     public int countLike(String uid, String parentId, String module){    	
     	
-		List<Like> list = sqlManager.execute(new SQLReady("select * from t_pf_like t "
-				+ "where t.parentId = ? and t.deleted = 0 and t.module = ? and t.uid = ?",parentId,module,uid),Like.class);
+//		List<Like> list = sqlManager.execute(new SQLReady("select * from t_pf_like t "
+//				+ "where t.parentId = ? and t.deleted = 0 and t.module = ? and t.uid = ?",parentId,module,uid),Like.class);
     	
-    	return list.size();
+//    	return list.size();
+    	return 1;
     }
     /**
      * 删除点赞数
@@ -91,13 +92,13 @@ public class LikeService {
      */
     public Object deleteLike(Like like){
     	
-    	//更新数据表
-    	int executeUpdate = likeMapper.executeUpdate("update t_pf_like set deleted='1' where module=? and type=? and parentId=? and uid=?", 
-    			like.getModule(),like.getType(),like.getParentId(),like.getUid());
-    	
-    	if(executeUpdate <= 0){
-    		return R.code(Rcode.DELETE_FAILURE);
-    	}
+//    	//更新数据表
+//    	int executeUpdate = likeMapper.executeUpdate("update t_pf_like set deleted='1' where module=? and type=? and parentId=? and uid=?", 
+//    			like.getModule(),like.getType(),like.getParentId(),like.getUid());
+//    	
+//    	if(executeUpdate <= 0){
+//    		return R.code(Rcode.DELETE_FAILURE);
+//    	}
     	
     	//删除redis
     	String cacheKey = getlikeModuleCacheKey(like.getModule(), like.getParentId(), like.getUid());

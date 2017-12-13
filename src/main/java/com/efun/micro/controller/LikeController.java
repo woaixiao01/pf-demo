@@ -1,20 +1,19 @@
 package com.efun.micro.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.redis.core.BoundListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.efun.cache.MixCacheManager;
 import com.efun.common.utils.R;
 import com.efun.common.utils.Rcode;
 import com.efun.micro.entity.Like;
 import com.efun.micro.param.LikeParam;
+import com.efun.micro.repository.LikeRepository;
 import com.efun.micro.service.LikeService;
 
 /**
@@ -28,6 +27,9 @@ public class LikeController {
 
 	@Autowired
 	LikeService likeService;
+	
+	@Autowired
+	LikeRepository likeRepository;
 
 	/**
 	 * 点赞模块
@@ -82,6 +84,16 @@ public class LikeController {
 		Like like = new Like(likeParam.getModule(), likeParam.getType(), likeParam.getParentId(), likeParam.getUid());
 		return likeService.deleteLike(like);
 
+	}
+	
+	@RequestMapping(value = "testLike")
+	public void testLike(String name) {
+		
+		List<Like> findAll = likeRepository.findAll();
+		System.out.println(findAll.toString());
+		
+		
+		
 	}
 
 }

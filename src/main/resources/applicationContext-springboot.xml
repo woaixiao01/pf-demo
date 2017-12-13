@@ -3,6 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:redis="http://www.springframework.org/schema/redis"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop.xsd
@@ -11,14 +12,14 @@
        http://www.springframework.org/schema/cache
        http://www.springframework.org/schema/cache/spring-cache.xsd
        http://www.springframework.org/schema/redis 
-       http://www.springframework.org/schema/redis/spring-redis.xsd">
-
-	<context:property-placeholder location="beetl/jdbc.properties" />
+       http://www.springframework.org/schema/redis/spring-redis.xsd
+       http://www.springframework.org/schema/data/jpa 
+       http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd">
 
 	<bean id="propertyPlaceholderConfigurer" class="com.efun.base.config.PropertyConfigurationLoader">
 		<property name="intervalSeconds" value="30" />
 		<property name="ignoreResourceNotFound" value="true" />
-		<property name="baseLocation" value="classpath:beetl/*.properties" />
+		<property name="baseLocation" value="classpath:mybatis/*.properties" />
 	</bean>
 
 	<!-- 配置管理 -->
@@ -27,9 +28,8 @@
 
 	<context:component-scan base-package="com.efun.micro" />
 
-	<!--beetl测试 -->
-	<!--数据源1配置 -->
-	<bean id="dataSource1" class="com.alibaba.druid.pool.DruidDataSource"
+	<!-- 数据源配置 -->
+	<bean id="writeDataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">
 		<!-- 基本属性 url、user、password -->
 		<property name="driverClassName" value="${jdbc.driver.base}" />
@@ -38,9 +38,8 @@
 		<property name="password" value="${jdbc.password.base}" />
 	</bean>
 
-	<!--数据源2配置 -->
-	<bean id="dataSource2" class="com.alibaba.druid.pool.DruidDataSource"
-		init-method="init" destroy-method="close">
+	<bean id="readDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close" primary="true">
 		<!-- 基本属性 url、user、password -->
 		<property name="driverClassName" value="${jdbc.driver.base.read}" />
 		<property name="url" value="${jdbc.url.base.read}" />
@@ -48,51 +47,89 @@
 		<property name="password" value="${jdbc.password.base.read}" />
 	</bean>
 
-
-	<bean name="beetlSqlScannerConfigurer" class="org.beetl.sql.ext.spring4.BeetlSqlScannerConfigurer">
-		<!-- 注入的mapper所在包名 -->
-		<property name="basePackage" value="com.efun.micro" />
-		<!-- mapper命名后缀规则 例如:UserMapper-后缀Mapper UserDao-后缀Dao -->
-		<property name="daoSuffix" value="Mapper" />
-		<property name="sqlManagerFactoryBeanName" value="sqlManagerFactoryBean" />
-	</bean>
-
-	<bean id="sqlManagerFactoryBean" class="com.efun.beetl.support.SqlManagerFactory">
-
-		<!--这个是最重要的，主从选择在该类处理 getConn方法 -->
-		<property name="cs">
-			<bean class="org.beetl.sql.ext.spring4.BeetlSqlDataSource">
-				<property name="masterSource" ref="dataSource1" />
-				<property name="slaves">
-					<list>
-						<ref bean="dataSource2" />
-					</list>
-				</property>
-			</bean>
-		</property>
-
-		<property name="dbStyle">
-			<bean class="org.beetl.sql.core.db.H2Style" />
-		</property>
-		<property name="sqlLoader">
-			<bean class="org.beetl.sql.core.ClasspathLoader">
-				<property name="sqlRoot" value="/sql" />
-			</bean>
-		</property>
-		<property name="nc">
-			<bean class="org.beetl.sql.core.JPA2NameConversion" />
-		</property>
-		<property name="interceptors">
+	<bean id="DB_1" class="com.efun.mybatis.db.DataSourceWapper">
+		<property name="slaves">
 			<list>
-				<bean class="org.beetl.sql.ext.DebugInterceptor" />
+				<ref bean="readDataSource" />
+				<ref bean="readDataSource" />
+			</list>
+		</property>
+		<property name="master">
+			<list>
+				<ref bean="writeDataSource" />
 			</list>
 		</property>
 	</bean>
-
-	<bean
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource1"></property>
+	<bean id="DB_2" class="com.efun.mybatis.db.DataSourceWapper">
+		<property name="slaves">
+			<list>
+				<ref bean="readDataSource" />
+				<ref bean="readDataSource" />
+			</list>
+		</property>
+		<property name="master">
+			<list>
+				<ref bean="writeDataSource" />
+			</list>
+		</property>
 	</bean>
+	<bean id="DEFAULT_DB" class="com.efun.mybatis.db.DataSourceWapper">
+		<property name="slaves">
+			<list>
+				<ref bean="readDataSource" />
+			</list>
+		</property>
+		<property name="master">
+			<list>
+				<ref bean="writeDataSource" />
+			</list>
+		</property>
+	</bean>
+	<bean id="dataSource" class="com.efun.mybatis.db.RoutingDataSource">
+		<property name="targetDataSources">
+			<map key-type="com.efun.mybatis.annotation.DSName">
+				<entry key="DB_1" value-ref="DB_1" />
+				<entry key="DB_2" value-ref="DB_2" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="DEFAULT_DB" />
+	</bean>
+	<!-- 配置 SpringData -->
+	<jpa:repositories base-package="com.efun.micro.repository"
+		entity-manager-factory-ref="entityManagerFactory"></jpa:repositories>
+
+	<!-- 配置 JPA 的 EntityManagerFactory -->
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<!-- 添加数据源 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"></bean>
+		</property>
+		<property name="packagesToScan" value="com.efun.micro.entity"></property>
+		<!-- hibernate 配置 -->
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+				<prop key="hibernate.hbm2ddl.auto">none</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<!-- 方言 hibernate 并不知道自己要使用哪种数据库 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+				<!-- <prop key="hibernate.cache.use_second_level_cache">true</prop> <prop 
+					key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop> 
+					<prop key="hibernate.cache.use_query_cache">true</prop> -->
+			</props>
+		</property>
+		<!-- <property name="sharedCacheMode" value="ENABLE_SELECTIVE"></property> -->
+	</bean>
+
+	<!-- 事务管理 -->
+	<tx:annotation-driven />
+
+	<!-- 激活自动代理功能 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
 
 	<bean id="redisSentinelConfiguration"
 		class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
